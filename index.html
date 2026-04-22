@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>AI SRL Study v22</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<script>
+// ===== Supabase 설정 =====
+const SUPABASE_URL = "https://aplbtqixpjwrbmlfbpvc.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_VJr_wkau0Qb0zgu_mbDgyA_Y6wLBzSf";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== 테스트용 더미 데이터 함수 (실제에서는 기존 함수 유지) =====
+function getCollectedData() {
+  return {
+    participantId: "test_" + Date.now(),
+    condition: "non-functional AI",
+    startedAt: new Date(Date.now() - 60000).toISOString()
+  };
+}
+
+// ===== Supabase 저장 함수 =====
+async function saveToSupabase(data) {
+  try {
+    const { error } = await supabase
+      .from("participants")
+      .insert([{
+        participant_id: data.participantId,
+        condition: data.condition,
+        started_at: data.startedAt,
+        completed_at: data.completedAt
+      }]);
+
+    if (error) {
+      console.error("Supabase 저장 실패:", error);
+    } else {
+      console.log("Supabase 저장 성공");
+    }
+  } catch (e) {
+    console.error("예외 발생:", e);
+  }
+}
+
+// ===== 실험 종료 시 호출 (지금은 버튼으로 테스트) =====
+function endExperiment() {
+  const data = getCollectedData();
+
+  saveToSupabase({
+    participantId: data.participantId,
+    condition: data.condition,
+    startedAt: data.startedAt,
+    completedAt: new Date().toISOString()
+  });
+}
+</script>
+
+<h2>v22 Supabase 연결 테스트</h2>
+<button onclick="endExperiment()">실험 종료 (테스트 저장)</button>
+
+</body>
+</html>
